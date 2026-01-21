@@ -1,157 +1,201 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, StatusBar, Dimensions } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { theme } from "../../theme/theme";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Animated, { ZoomIn, FadeIn } from "react-native-reanimated";
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withTiming,
+    withRepeat,
+    withSequence,
+    Easing,
+    FadeIn,
+    FadeInDown
+} from "react-native-reanimated";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../Navigation/types";
 
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Splash">;
 
 const SplashScreen = () => {
-    const titleText = "Pehnava".split("");
     const navigation = useNavigation<NavigationProp>();
 
+    // Shared values for complex animations
+    const logoScale = useSharedValue(0.8);
+    const logoOpacity = useSharedValue(0);
+    const pulsing = useSharedValue(1);
+
     useEffect(() => {
+        // Initial entry animation
+        logoScale.value = withTiming(1, {
+            duration: 1200,
+            easing: Easing.out(Easing.back(1.5))
+        });
+        logoOpacity.value = withTiming(1, { duration: 1000 });
+
+        // Subtle pulsing effect
+        pulsing.value = withRepeat(
+            withSequence(
+                withTiming(1.05, { duration: 1500, easing: Easing.inOut(Easing.sin) }),
+                withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.sin) })
+            ),
+            -1,
+            true
+        );
+
         const timer = setTimeout(() => {
             navigation.replace("Main");
-        }, 2500);
+        }, 3000);
 
         return () => clearTimeout(timer);
     }, [navigation]);
 
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.white }}>
-            <View style={styles.container}>
-                {/* Horizontal Layout: Logo + Text */}
-                <View style={styles.brandContainer}>
-                    {/* Logo Wrapper */}
-                    <Animated.View
-                        entering={ZoomIn.duration(1000).springify()}
-                        style={styles.logoWrapper}
-                    >
-                        {/* Glow - blur effect simulation */}
-                        <LinearGradient
-                            colors={[theme.colors.primary, theme.colors.accent]}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 1 }}
-                            style={styles.glow}
-                        />
+    const animatedLogoStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: logoScale.value * pulsing.value }],
+        opacity: logoOpacity.value,
+    }));
 
-                        {/* Logo Box */}
+    return (
+        <View style={styles.container}>
+            <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+
+            {/* White Professional Background */}
+            <View style={[StyleSheet.absoluteFill, { backgroundColor: theme.colors.white }]} />
+
+            <View style={styles.overlayContainer}>
+                <View style={styles.brandWrapper}>
+                    {/* Pulsing Glow (Subtle for white background) */}
+                    <Animated.View style={[styles.glow, { opacity: logoOpacity.value * 0.1 }]} />
+
+                    {/* Logo Box */}
+                    <Animated.View style={[styles.logoContainer, animatedLogoStyle]}>
                         <LinearGradient
                             colors={[theme.colors.primary, theme.colors.accent]}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 1 }}
                             style={styles.logoBox}
                         >
-                            <Text style={styles.logoText}>P</Text>
+                            <Text style={styles.logoLetter}>P</Text>
                         </LinearGradient>
                     </Animated.View>
 
-                    {/* Text Column */}
-                    <View style={styles.textColumn}>
-                        <View style={styles.titleContainer}>
-                            {titleText.map((letter, index) => (
-                                <Animated.Text
-                                    key={index}
-                                    entering={FadeIn.delay(index * 150).duration(200)}
-                                    style={styles.title}
-                                >
-                                    {letter}
-                                </Animated.Text>
-                            ))}
+                    {/* Brand Name */}
+                    <Animated.View entering={FadeInDown.delay(600).duration(800)}>
+                        <Text style={styles.brandTitle}>PEHNAVA</Text>
+                        <View style={styles.dividerRow}>
+                            <View style={styles.divider} />
+                            <Text style={styles.tagline}>BOUTIQUE</Text>
+                            <View style={styles.divider} />
                         </View>
-                    </View>
+                    </Animated.View>
                 </View>
+
+                {/* Bottom Credits */}
+                <Animated.View
+                    entering={FadeIn.delay(1200).duration(1000)}
+                    style={styles.footer}
+                >
+                    <Text style={styles.footerText}>EST. 2024</Text>
+                    <Text style={styles.footerSubText}>CRAFTED WITH HERITAGE</Text>
+                </Animated.View>
             </View>
-            <Animated.Text
-                entering={FadeIn.delay(1200).duration(800)}
-                style={styles.subtitle}
-            >
-                Traditional Wear
-            </Animated.Text>
-        </SafeAreaView >
+        </View>
     );
 };
-
-export default SplashScreen;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.colors.white,
-        alignItems: "center",
-        justifyContent: "center",
     },
-
-    brandContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 16,
+    overlayContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-
-    logoWrapper: {
-        position: "relative",
-        width: 64,
-        height: 64,
-
+    brandWrapper: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-
     glow: {
-        position: "absolute",
-        width: 72,
-        height: 72,
-        left: -4,
-        top: -4,
-        borderRadius: 16,
-        opacity: 0.1,
-    },
-
-    logoBox: {
-        width: 64,
-        height: 64,
-        borderRadius: 16,
-        alignItems: "center",
-        justifyContent: "center",
-        elevation: 8,
-        shadowColor: theme.colors.accent,
-        shadowOpacity: 0.3,
-        shadowRadius: 20,
+        position: 'absolute',
+        width: 150,
+        height: 150,
+        borderRadius: 75,
+        backgroundColor: theme.colors.primary,
+        // Using shadow as a blur alternative
+        shadowColor: theme.colors.primary,
         shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.1,
+        shadowRadius: 50,
     },
-
-    logoText: {
-        fontSize: 32,
-        fontWeight: "800",
+    logoContainer: {
+        marginBottom: 24,
+    },
+    logoBox: {
+        width: 80,
+        height: 80,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 8,
+        shadowColor: '#' + (theme.colors.primary.replace('#', '')),
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.2,
+        shadowRadius: 16,
+    },
+    logoLetter: {
+        fontSize: 42,
+        fontWeight: '900',
         color: theme.colors.white,
     },
-
-    textColumn: {
-        flexDirection: "column",
-        justifyContent: "center",
-    },
-
-    titleContainer: {
-        flexDirection: 'row',
-    },
-
-    title: {
-        fontSize: 28,
-        fontWeight: "700",
+    brandTitle: {
+        fontSize: 36,
+        fontWeight: '800',
         color: theme.colors.charcoal,
-        letterSpacing: -0.5,
+        letterSpacing: 8,
+        textAlign: 'center',
+        marginLeft: 8,
     },
-
-    subtitle: {
-        fontSize: 15,
-        color: theme.colors.slate,
-        fontWeight: "bold",
-        letterSpacing: 1.5,
-        textTransform: "uppercase",
-        textAlign: "center",
-        marginBottom: 50 // Added some bottom margin to lift it up from the very bottom edge if mostly centered, or just to keep it safe.
+    dividerRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 8,
+        gap: 12,
     },
+    divider: {
+        width: 40,
+        height: 1,
+        backgroundColor: 'rgba(0,0,0,0.1)',
+    },
+    tagline: {
+        fontSize: 12,
+        fontWeight: '700',
+        color: 'rgba(0,0,0,0.4)',
+        letterSpacing: 4,
+        textTransform: 'uppercase',
+    },
+    footer: {
+        position: 'absolute',
+        bottom: 60,
+        alignItems: 'center',
+    },
+    footerText: {
+        fontSize: 10,
+        fontWeight: '900',
+        color: 'rgba(0,0,0,0.2)',
+        letterSpacing: 2,
+        marginBottom: 4,
+    },
+    footerSubText: {
+        fontSize: 9,
+        fontWeight: '700',
+        color: 'rgba(0,0,0,0.15)',
+        letterSpacing: 1,
+    }
 });
+
+export default SplashScreen;
