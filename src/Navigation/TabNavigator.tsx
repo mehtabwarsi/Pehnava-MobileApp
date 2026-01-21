@@ -2,11 +2,10 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { TabParamList } from './types';
 import HomeScreen from '../Screens/HomeScreen/HomeScreen';
-import SearchScreen from '../Screens/SearchScreen/SearchScreen';
 import CartScreen from '../Screens/CartScreen/CartScreen';
 import ProfileScreen from '../Screens/ProfileScreen/ProfileScreen';
 import { theme } from '../theme/theme';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import CollectionScreen from '../Screens/Collection/CollectionScreen';
@@ -79,7 +78,11 @@ const TabNavigator = () => {
                 <Tab.Screen
                     name="CartTab"
                     component={CartScreen}
-                    options={{ title: 'Cart', tabBarBadge: cartCount }}
+                    options={{
+                        title: 'Bag',
+                        tabBarBadge: cartCount,
+                        tabBarStyle: { display: 'none' }
+                    }}
                 />
                 <Tab.Screen
                     name="ProfileTab"

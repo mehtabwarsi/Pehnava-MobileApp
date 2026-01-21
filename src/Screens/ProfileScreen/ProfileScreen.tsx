@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
     View,
     Text,
@@ -6,16 +6,22 @@ import {
     TouchableOpacity,
     ScrollView,
     Image,
-} from "react-native";
-import { theme } from "../../theme/theme";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Icon from "react-native-vector-icons/Feather";
+    Dimensions,
+    StatusBar
+} from 'react-native';
+import { theme } from '../../theme/theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/Feather';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // Mock User Data
 const MOCK_USER = {
     name: "John Doe",
     email: "john.doe@example.com",
-    avatar: null, // Placeholder logic
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&h=200&auto=format&fit=crop",
+    membership: "Gold Member",
+    joinDate: "Member since Oct 2023"
 };
 
 const ProfileScreen = () => {
@@ -32,277 +38,384 @@ const ProfileScreen = () => {
 
     return (
         <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="dark-content" />
+
+            {/* Header / Title */}
+            <View style={styles.appHeader}>
+                <Text style={styles.headerTitle}>PROFILE</Text>
+                <TouchableOpacity style={styles.settingsBtn}>
+                    <Icon name="settings" size={20} color={theme.colors.charcoal} />
+                </TouchableOpacity>
+            </View>
+
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             >
-                {/* 1. Profile Header */}
-                <View style={styles.header}>
-                    <View style={styles.avatarContainer}>
-                        <View style={styles.avatarCircle}>
-                            <Icon name="user" size={48} color={theme.colors.slate + "50"} />
+                {/* 1. Premium Profile Header */}
+                <View style={styles.profileHeader}>
+                    <View style={styles.profileMain}>
+                        <View style={styles.avatarContainer}>
+                            <Image
+                                source={{ uri: MOCK_USER.avatar }}
+                                style={styles.avatarImage}
+                            />
+                            <TouchableOpacity style={styles.editAvatarBtn}>
+                                <Icon name="camera" size={12} color={theme.colors.white} />
+                            </TouchableOpacity>
                         </View>
-                        <TouchableOpacity
-                            style={styles.addButton}
-                            activeOpacity={0.8}
-                        >
-                            <Icon name="camera" size={14} color={theme.colors.white} />
-                        </TouchableOpacity>
-                    </View>
 
-                    <View style={styles.userInfo}>
-                        <Text style={styles.userName}>{MOCK_USER.name}</Text>
-                        <Text style={styles.userEmail}>{MOCK_USER.email}</Text>
+                        <View style={styles.profileInfo}>
+                            <Text style={styles.userName}>{MOCK_USER.name}</Text>
+                            <Text style={styles.userEmail}>{MOCK_USER.email}</Text>
+                            <View style={styles.membershipBadge}>
+                                <Icon name="award" size={10} color={theme.colors.primary} />
+                                <Text style={styles.membershipText}>{MOCK_USER.membership}</Text>
+                            </View>
+                        </View>
                     </View>
 
                     <TouchableOpacity
-                        style={styles.editButton}
+                        style={styles.editProfileBtn}
                         onPress={handleEditProfile}
-                        activeOpacity={0.7}
                     >
-                        <Text style={styles.editButtonText}>Edit Profile</Text>
+                        <Text style={styles.editProfileBtnText}>Edit Profile</Text>
                     </TouchableOpacity>
                 </View>
 
-                {/* 2. Stats Row */}
-                <View style={styles.statsRow}>
-                    <View style={[styles.statItem, styles.statDivider]}>
+                {/* 2. Stats Dashboard */}
+                <View style={styles.statsDashboard}>
+                    <TouchableOpacity style={styles.statBox}>
                         <Text style={styles.statValue}>{totalOrders}</Text>
-                        <Text style={styles.statLabel}>ORDERS</Text>
-                    </View>
-                    <View style={styles.statItem}>
+                        <Text style={styles.statLabel}>Orders</Text>
+                    </TouchableOpacity>
+                    <View style={styles.statDivider} />
+                    <TouchableOpacity style={styles.statBox}>
                         <Text style={styles.statValue}>{totalWishList}</Text>
-                        <Text style={styles.statLabel}>WISHLIST</Text>
+                        <Text style={styles.statLabel}>Wishlist</Text>
+                    </TouchableOpacity>
+                    <View style={styles.statDivider} />
+                    <TouchableOpacity style={styles.statBox}>
+                        <Text style={styles.statValue}>₹450</Text>
+                        <Text style={styles.statLabel}>Credits</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* 3. Menu Categories */}
+                <View style={styles.menuSection}>
+                    <Text style={styles.sectionTitle}>MY ACTIVITY</Text>
+                    <View style={styles.menuGroup}>
+                        <MenuRow
+                            icon="package"
+                            title="My Orders"
+                            subtitle="Track, cancel or buy again"
+                        />
+                        <MenuRow
+                            icon="heart"
+                            title="Wishlist"
+                            subtitle="Your most loved treasures"
+                            isLast
+                        />
+                    </View>
+
+                    <Text style={styles.sectionTitle}>ACCOUNT SETTINGS</Text>
+                    <View style={styles.menuGroup}>
+                        <MenuRow
+                            icon="map-pin"
+                            title="Addresses"
+                            subtitle="Manage delivery locations"
+                        />
+                        <MenuRow
+                            icon="credit-card"
+                            title="Payment Methods"
+                            subtitle="Saved cards and UPI IDs"
+                        />
+                        <MenuRow
+                            icon="bell"
+                            title="Notifications"
+                            subtitle="Offers and order updates"
+                            isLast
+                        />
+                    </View>
+
+                    <Text style={styles.sectionTitle}>SUPPORT & INFORMATION</Text>
+                    <View style={styles.menuGroup}>
+                        <MenuRow
+                            icon="help-circle"
+                            title="Help Center"
+                            subtitle="FAQs and customer support"
+                        />
+                        <MenuRow
+                            icon="info"
+                            title="About Us"
+                            subtitle="Our story and boutiques"
+                        />
+                        <MenuRow
+                            icon="file-text"
+                            title="Terms & Privacy"
+                            subtitle="Legal information"
+                            isLast
+                        />
                     </View>
                 </View>
 
-                {/* 3. Menu List */}
-                <View style={styles.menuContainer}>
-                    <MenuItem
-                        icon="package"
-                        title="My Orders"
-                        desc="Track active orders and returns"
-                    />
-                    <MenuItem
-                        icon="heart"
-                        title="Wishlist"
-                        desc="Your curated collection"
-                    />
-                    <MenuItem
-                        icon="map-pin"
-                        title="Addresses"
-                        desc="Manage delivery locations"
-                    />
-                    <MenuItem
-                        icon="credit-card"
-                        title="Payment Methods"
-                        desc="Manage cards and UPI"
-                    />
-                    <MenuItem
-                        icon="shield"
-                        title="Privacy & Security"
-                        desc="Password and account access"
-                    />
-                    <MenuItem
-                        icon="help-circle"
-                        title="Help Center"
-                        desc="FAQs and customer support"
-                    />
+                {/* 4. Branding & Logout */}
+                <View style={styles.footerSection}>
+                    <TouchableOpacity
+                        style={styles.logoutBtn}
+                        onPress={handleLogout}
+                    >
+                        <Icon name="log-out" size={18} color="#FF3E6C" />
+                        <Text style={styles.logoutText}>Log Out</Text>
+                    </TouchableOpacity>
+
+                    <Text style={styles.versionText}>Pehnava Boutique v1.0.4</Text>
                 </View>
 
-                {/* 4. Logout Button */}
-                <TouchableOpacity
-                    style={styles.logoutButton}
-                    onPress={handleLogout}
-                    activeOpacity={0.8}
-                >
-                    <Icon name="log-out" size={18} color="#FF3B30" />
-                    <Text style={styles.logoutText}>Sign Out</Text>
-                </TouchableOpacity>
-
-                <View style={{ height: 40 }} />
             </ScrollView>
         </SafeAreaView>
     );
 };
 
-// Reusable Menu Item Component
-const MenuItem = ({ icon, title, desc, onPress }: any) => (
+const MenuRow = ({ icon, title, subtitle, isLast, onPress }: any) => (
     <TouchableOpacity
-        style={styles.menuItem}
+        style={[styles.menuRow, !isLast && styles.rowBorder]}
         onPress={onPress}
-        activeOpacity={0.6}
+        activeOpacity={0.7}
     >
-        <View style={styles.menuIconCircle}>
-            <Icon name={icon} size={20} color={theme.colors.charcoal} />
+        <View style={styles.rowLead}>
+            <View style={styles.iconCircle}>
+                <Icon name={icon} size={18} color={theme.colors.charcoal} />
+            </View>
+            <View style={styles.rowInfo}>
+                <Text style={styles.rowTitle}>{title}</Text>
+                <Text style={styles.rowSubtitle}>{subtitle}</Text>
+            </View>
         </View>
-        <View style={styles.menuTextContainer}>
-            <Text style={styles.menuTitle}>{title}</Text>
-            <Text style={styles.menuDesc} numberOfLines={1}>
-                {desc}
-            </Text>
-        </View>
-        <Icon name="chevron-right" size={20} color={theme.colors.border} />
+        <Icon name="chevron-right" size={18} color={theme.colors.slate} />
     </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.colors.offWhite,
+        backgroundColor: '#F8F9FA',
+    },
+    appHeader: {
+        height: 60,
+        backgroundColor: theme.colors.white,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#EEEEEE',
+    },
+    headerTitle: {
+        fontSize: 14,
+        fontWeight: '800',
+        color: theme.colors.charcoal,
+        letterSpacing: 2,
+    },
+    settingsBtn: {
+        position: 'absolute',
+        right: 16,
+        padding: 4,
     },
     scrollContent: {
-        paddingHorizontal: 20,
-        paddingTop: 20,
         paddingBottom: 40,
     },
-    header: {
-        alignItems: "center",
-        marginBottom: 32,
+    profileHeader: {
+        backgroundColor: theme.colors.white,
+        padding: 24,
+        alignItems: 'center',
+    },
+    profileMain: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        marginBottom: 24,
     },
     avatarContainer: {
-        position: "relative",
-        marginBottom: 16,
+        position: 'relative',
     },
-    avatarCircle: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        backgroundColor: theme.colors.white,
-        justifyContent: "center",
-        alignItems: "center",
-        borderWidth: 4,
-        borderColor: theme.colors.white,
-        // Shadow
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.1,
-        shadowRadius: 20,
-        elevation: 10,
+    avatarImage: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: '#F3F4F6',
     },
-    addButton: {
-        position: "absolute",
+    editAvatarBtn: {
+        position: 'absolute',
         bottom: 0,
         right: 0,
-        width: 32,
-        height: 32,
-        borderRadius: 16,
+        width: 24,
+        height: 24,
+        borderRadius: 12,
         backgroundColor: theme.colors.charcoal,
-        justifyContent: "center",
-        alignItems: "center",
-        borderWidth: 3,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 2,
         borderColor: theme.colors.white,
     },
-    userInfo: {
-        alignItems: "center",
-        marginBottom: 16,
+    profileInfo: {
+        marginLeft: 20,
+        flex: 1,
     },
     userName: {
-        fontSize: 24,
-        fontWeight: "bold",
+        fontSize: 20,
+        fontWeight: '800',
         color: theme.colors.charcoal,
     },
     userEmail: {
-        fontSize: 14,
-        fontWeight: "500",
-        color: theme.colors.slate,
-        marginTop: 4,
-    },
-    editButton: {
-        paddingHorizontal: 24,
-        paddingVertical: 10,
-        borderRadius: 24,
-        borderWidth: 1,
-        borderColor: theme.colors.border,
-    },
-    editButtonText: {
-        fontSize: 14,
-        fontWeight: "600",
-        color: theme.colors.charcoal,
-    },
-    statsRow: {
-        flexDirection: "row",
-        backgroundColor: theme.colors.white,
-        borderRadius: 20,
-        paddingVertical: 20,
-        marginBottom: 24,
-        borderWidth: 1,
-        borderColor: theme.colors.border + "40",
-    },
-    statItem: {
-        flex: 1,
-        alignItems: "center",
-    },
-    statDivider: {
-        borderRightWidth: 1,
-        borderRightColor: theme.colors.border + "40",
-    },
-    statValue: {
-        fontSize: 22,
-        fontWeight: "bold",
-        color: theme.colors.charcoal,
-    },
-    statLabel: {
-        fontSize: 10,
-        fontWeight: "600",
-        color: theme.colors.slate,
-        marginTop: 4,
-        letterSpacing: 1,
-    },
-    menuContainer: {
-        backgroundColor: theme.colors.white,
-        borderRadius: 20,
-        paddingVertical: 8,
-        marginBottom: 24,
-        borderWidth: 1,
-        borderColor: theme.colors.border + "40",
-        overflow: "hidden",
-    },
-    menuItem: {
-        flexDirection: "row",
-        alignItems: "center",
-        padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: theme.colors.offWhite,
-    },
-    menuIconCircle: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: theme.colors.lightGray + "50",
-        justifyContent: "center",
-        alignItems: "center",
-        marginRight: 16,
-    },
-    menuTextContainer: {
-        flex: 1,
-    },
-    menuTitle: {
-        fontSize: 15,
-        fontWeight: "600",
-        color: theme.colors.charcoal,
-    },
-    menuDesc: {
-        fontSize: 12,
+        fontSize: 13,
         color: theme.colors.slate,
         marginTop: 2,
     },
-    logoutButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: theme.colors.white,
-        borderRadius: 20,
-        paddingVertical: 16,
+    membershipBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: theme.colors.primary + '10',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 12,
+        alignSelf: 'flex-start',
+        marginTop: 8,
+        gap: 4,
+    },
+    membershipText: {
+        fontSize: 10,
+        fontWeight: '700',
+        color: theme.colors.charcoal,
+    },
+    editProfileBtn: {
+        width: '100%',
+        height: 44,
         borderWidth: 1,
-        borderColor: "#FF3B3020",
-        gap: 8,
+        borderColor: '#EEEEEE',
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    editProfileBtnText: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: theme.colors.charcoal,
+    },
+    statsDashboard: {
+        flexDirection: 'row',
+        backgroundColor: theme.colors.white,
+        marginVertical: 12,
+        paddingVertical: 16,
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: '#EEEEEE',
+    },
+    statBox: {
+        flex: 1,
+        alignItems: 'center',
+    },
+    statValue: {
+        fontSize: 16,
+        fontWeight: '800',
+        color: theme.colors.charcoal,
+    },
+    statLabel: {
+        fontSize: 11,
+        color: theme.colors.slate,
+        fontWeight: '500',
+        marginTop: 4,
+    },
+    statDivider: {
+        width: 1,
+        height: '60%',
+        backgroundColor: '#EEEEEE',
+        alignSelf: 'center',
+    },
+    menuSection: {
+        paddingVertical: 12,
+    },
+    sectionTitle: {
+        fontSize: 11,
+        fontWeight: '800',
+        color: theme.colors.slate,
+        letterSpacing: 1.5,
+        paddingHorizontal: 20,
+        marginBottom: 12,
+        marginTop: 12,
+    },
+    menuGroup: {
+        backgroundColor: theme.colors.white,
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: '#EEEEEE',
+    },
+    menuRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 16,
+        paddingHorizontal: 20,
+    },
+    rowBorder: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#F3F4F6',
+    },
+    rowLead: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    iconCircle: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: '#F3F4F6',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 16,
+    },
+    rowInfo: {
+        flex: 1,
+    },
+    rowTitle: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: theme.colors.charcoal,
+    },
+    rowSubtitle: {
+        fontSize: 11,
+        color: theme.colors.slate,
+        marginTop: 2,
+    },
+    footerSection: {
+        marginTop: 24,
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    logoutBtn: {
+        width: '100%',
+        height: 52,
+        backgroundColor: theme.colors.white,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#FF3E6C30',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 12,
+        marginBottom: 20,
     },
     logoutText: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: "#FF3B30",
+        fontSize: 15,
+        fontWeight: '800',
+        color: '#FF3E6C',
     },
+    versionText: {
+        fontSize: 11,
+        color: '#BBBBBB',
+        fontWeight: '500',
+    }
 });
 
 export default ProfileScreen;

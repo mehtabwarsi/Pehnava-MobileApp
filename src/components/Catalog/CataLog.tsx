@@ -47,7 +47,6 @@ const Catalog: React.FC<CatalogProps> = ({ title, description, categories, gende
             ]}
             onPress={() => {
                 if (item.redirectUrl) {
-                    // Logic for custom redirect if needed
                     console.log('Redirecting to:', item.redirectUrl);
                 } else {
                     navigation.navigate('Shop', {
@@ -63,18 +62,20 @@ const Catalog: React.FC<CatalogProps> = ({ title, description, categories, gende
                 imageStyle={styles.imageStyle}
             >
                 <LinearGradient
-                    colors={['transparent', 'rgba(31, 31, 31, 0.3)', 'rgba(31, 31, 31, 0.3)']}
+                    colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)']}
                     style={styles.gradient}
                 >
                     <View style={styles.cardContent}>
-                        <Text style={styles.cardSubtitle}>
-                            {item.subtitle} ITEMS
-                        </Text>
+                        <View style={styles.badgeWrapper}>
+                            <Text style={styles.cardSubtitle}>
+                                {item.subtitle} DESIGNS
+                            </Text>
+                        </View>
                         <Text style={styles.cardTitle}>
                             {item.title}
                         </Text>
-                        <View style={styles.button}>
-                            <Text style={styles.buttonText}>Explore</Text>
+                        <View style={styles.exploreBtn}>
+                            <Text style={styles.exploreBtnText}>SHOP NOW</Text>
                             <Icon name="arrow-right" size={14} color={theme.colors.white} />
                         </View>
                     </View>
@@ -161,36 +162,40 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     cardContent: {
-        gap: 2,
+        gap: 4,
+    },
+    badgeWrapper: {
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        alignSelf: 'flex-start',
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        borderRadius: 4,
+        marginBottom: 4,
     },
     cardSubtitle: {
-        color: theme.colors.accentLight,
-        fontSize: 10, // Reduced from 12
-        fontWeight: '700',
+        color: theme.colors.white,
+        fontSize: 9,
+        fontWeight: '800',
         letterSpacing: 1.5,
     },
     cardTitle: {
         color: theme.colors.white,
-        fontSize: 20, // Reduced from 26
-        fontWeight: 'bold',
-        marginBottom: 8,
+        fontSize: 22,
+        fontWeight: '800',
+        marginBottom: 10,
+        letterSpacing: 0.5,
     },
-    button: {
+    exploreBtn: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 6,
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        gap: 8,
         alignSelf: 'flex-start',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.3)',
     },
-    buttonText: {
+    exploreBtnText: {
         color: theme.colors.white,
-        fontWeight: '700',
-        fontSize: 12,
+        fontWeight: '800',
+        fontSize: 11,
+        letterSpacing: 1.5,
     },
 });
 
