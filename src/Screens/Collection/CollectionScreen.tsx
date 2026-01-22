@@ -50,7 +50,7 @@ const COLLECTIONS_MOCK = [
         slug: 'summer-edit',
         title: 'Summer Edit',
         subtitle: 'Light, breathable textures for the conscious modern woman.',
-        image: 'https://images.unsplash.com/photo-1560506154-21449a65100c',
+        image: 'https://i.pinimg.com/736x/83/61/36/8361360a654e7bbc2b5f5d204c1a44d6.jpg',
         isLarge: true
     }
 ];

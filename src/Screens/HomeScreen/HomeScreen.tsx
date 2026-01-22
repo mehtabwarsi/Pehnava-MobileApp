@@ -75,7 +75,7 @@ const MOCK_PRODUCTS = [
         title: "Ethnic Party Wear",
         price: 3200,
         originalPrice: 4500,
-        image: "https://images.unsplash.com/photo-1599032909756-5dee8c652ad7",
+        image: "https://i.pinimg.com/736x/b9/2f/f5/b92ff5d2013e43589349109e09f7955f.jpg",
         isNew: true,
         rating: 4.2,
     },
@@ -85,7 +85,7 @@ const MOCK_PRODUCTS = [
         title: "Bridal Lehenga",
         price: 12500,
         originalPrice: 25000,
-        image: "https://images.unsplash.com/photo-1583391733975-642c3b53f89d",
+        image: "https://i.pinimg.com/1200x/f3/f9/f5/f3f9f5b48079d4daa97e07a9a97395a6.jpg",
         isNew: false,
         rating: 4.9,
     },
@@ -193,7 +193,7 @@ const HomeScreen = () => {
                 {/* 6. New: Brand Story Banner */}
                 <TouchableOpacity style={styles.storyBanner} activeOpacity={0.9}>
                     <ImageBackground
-                        source={{ uri: 'https://images.unsplash.com/photo-1560506154-21449a65100c' }}
+                        source={{ uri: 'https://i.pinimg.com/736x/e2/fc/d2/e2fcd2f2ce941d8aeb3980a55a16c819.jpg' }}
                         style={styles.storyImg}
                         imageStyle={styles.roundedImg}
                     >
