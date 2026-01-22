@@ -127,7 +127,8 @@ const CollectionScreen = () => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: theme.colors.white,
+        // backgroundColor: theme.colors.white,
+        backgroundColor: '#F8F9FA'
     },
     scrollContent: {
         paddingBottom: 20,
