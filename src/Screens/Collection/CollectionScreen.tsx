@@ -68,16 +68,6 @@ const CollectionScreen = () => {
             >
                 {/* 1. Cinematic Discovery Header */}
                 <View style={styles.header}>
-                    <View style={styles.headerTop}>
-                        <View style={styles.breadcrumb}>
-                            <Text style={styles.breadcrumbText}>BOUTIQUE</Text>
-                            <Icon name="chevron-right" size={10} color={theme.colors.slate} />
-                            <Text style={[styles.breadcrumbText, styles.breadcrumbActive]}>DISCOVER</Text>
-                        </View>
-                        <TouchableOpacity style={styles.filterBtn}>
-                            <Icon name="sliders" size={18} color={theme.colors.charcoal} />
-                        </TouchableOpacity>
-                    </View>
 
                     <Text style={styles.headerTitle}>Curated{"\n"}Collections</Text>
                     <Text style={styles.headerSubtitle}>
