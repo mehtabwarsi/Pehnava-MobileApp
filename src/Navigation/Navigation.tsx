@@ -7,7 +7,6 @@ import LoginScreen from "../Screens/LoginScreen/LoginScreen";
 import TabNavigator from "./TabNavigator";
 import SearchScreen from "../Screens/SearchScreen/SearchScreen";
 import WishListScreen from "../Screens/WishList/WishListScreen";
-import ProductDetailsScreen from "../Screens/ProductScreen/ProductDetailsScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -21,7 +20,6 @@ export default function Navigation() {
             <Stack.Screen name="Checkout" component={CheckoutScreen} />
             <Stack.Screen name="Search" component={SearchScreen} />
             <Stack.Screen name="WishList" component={WishListScreen} />
-            <Stack.Screen name="ProductDetails" component={ProductDetailsScreen} />
         </Stack.Navigator>
     );
 }
