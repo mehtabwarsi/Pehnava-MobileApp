@@ -3,7 +3,7 @@ export type RootStackParamList = {
     Login: undefined;
     Main: undefined; // This will hold the Bottom Tab Navigator
     Product: { id: string };
-    ProductDetails: { id: string };
+    ProductDetails: undefined
     Checkout: undefined;
     Search: undefined;
     WishList: undefined;
