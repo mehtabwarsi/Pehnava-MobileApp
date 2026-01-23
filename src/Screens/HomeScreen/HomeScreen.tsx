@@ -8,6 +8,8 @@ import HomeCarousel from "../../components/HomeCarousel/HomeCarousel";
 import ProductCard from "../../components/Product/ProductCard";
 import Icon from "react-native-vector-icons/Ionicons";
 import LinearGradient from "react-native-linear-gradient";
+import PromoCard from "../../components/Card/PromoCard";
+import TrendingCard from "../../components/Card/TrendingCard";
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -107,27 +109,13 @@ const HomeScreen = () => {
             >
                 {/* 1. Hero Carousel */}
                 <HomeCarousel />
-
-                {/* 2. New: Promotional Offer Strip */}
-                <TouchableOpacity style={styles.promoStrip} activeOpacity={0.9}>
-                    <LinearGradient
-                        colors={[theme.colors.charcoal, '#2C3E50']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.promoGradient}
-                    >
-                        <View style={styles.promoContent}>
-                            <View style={styles.promoIconTag}>
-                                <Icon name="flash" size={12} color={theme.colors.white} />
-                            </View>
-                            <Text style={styles.promoText}>
-                                FLAT <Text style={styles.promoBold}>₹500 OFF</Text> ON YOUR FIRST PURCHASE
-                            </Text>
-                            <Text style={styles.promoCode}>CODE: PEHNAVA500</Text>
-                        </View>
-                        <Icon name="arrow-forward-circle" size={24} color="rgba(255,255,255,0.3)" />
-                    </LinearGradient>
-                </TouchableOpacity>
+                {/* 2. Promo Card */}
+                <PromoCard
+                    offPrice="₹500 OFF"
+                    description="ON YOUR FIRST PURCHASE"
+                    code="PEHNAVA500"
+                    onPress={() => console.log('Promo Card Pressed')}
+                />
 
                 {/* 3. Catalog Section */}
                 <View style={styles.catalogSection}>
@@ -141,32 +129,20 @@ const HomeScreen = () => {
 
                 {/* 4. New: Dual Visual Banners */}
                 <View style={styles.dualBanners}>
-                    <TouchableOpacity style={styles.dualBannerBox} activeOpacity={0.9}>
-                        <ImageBackground
-                            source={{ uri: 'https://images.unsplash.com/photo-1621335829175-95f437384d7c' }}
-                            style={styles.dualBannerImg}
-                            imageStyle={styles.roundedImg}
-                        >
-                            <LinearGradient colors={['transparent', 'rgba(0,0,0,0.7)']} style={styles.dualGradient}>
-                                <Text style={styles.dualTag}>NEW IN</Text>
-                                <Text style={styles.dualTitle}>Men's Luxe</Text>
-                                <Text style={styles.dualAction}>EXPLORE</Text>
-                            </LinearGradient>
-                        </ImageBackground>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.dualBannerBox} activeOpacity={0.9}>
-                        <ImageBackground
-                            source={{ uri: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1' }}
-                            style={styles.dualBannerImg}
-                            imageStyle={styles.roundedImg}
-                        >
-                            <LinearGradient colors={['transparent', 'rgba(0,0,0,0.7)']} style={styles.dualGradient}>
-                                <Text style={styles.dualTag}>TRENDING</Text>
-                                <Text style={styles.dualTitle}>Floral Edit</Text>
-                                <Text style={styles.dualAction}>SHOP NOW</Text>
-                            </LinearGradient>
-                        </ImageBackground>
-                    </TouchableOpacity>
+                    <TrendingCard
+                        title="Men's Luxe"
+                        subtitle="NEW IN"
+                        image="https://images.unsplash.com/photo-1621335829175-95f437384d7c"
+                        buttonText="EXPLORE"
+                        onPress={() => console.log('New in banner pressed')}
+                    />
+                    <TrendingCard
+                        title="Floral Edit"
+                        subtitle="TRENDING"
+                        image="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1"
+                        buttonText="SHOP NOW"
+                        onPress={() => console.log('Trending banner pressed')}
+                    />
                 </View>
 
                 {/* 5. Trending Section */}
@@ -195,7 +171,6 @@ const HomeScreen = () => {
                     <ImageBackground
                         source={{ uri: 'https://i.pinimg.com/736x/e2/fc/d2/e2fcd2f2ce941d8aeb3980a55a16c819.jpg' }}
                         style={styles.storyImg}
-                        imageStyle={styles.roundedImg}
                     >
                         <LinearGradient colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.8)']} style={styles.storyOverlay}>
                             <View style={styles.storyTextContainer}>
@@ -205,7 +180,7 @@ const HomeScreen = () => {
                                     Each piece in our boutique is a testament to India's rich artisanal legacy,
                                     brought to life with modern elegance.
                                 </Text>
-                                <TouchableOpacity style={styles.storyBtn}>
+                                <TouchableOpacity style={styles.storyBtn} activeOpacity={0.8}>
                                     <Text style={styles.storyBtnText}>OUR STORY</Text>
                                 </TouchableOpacity>
                             </View>
@@ -246,47 +221,6 @@ const styles = StyleSheet.create({
     scrollContent: {
         paddingBottom: 20,
     },
-    promoStrip: {
-        marginHorizontal: 20,
-        marginVertical: 16,
-        borderRadius: 12,
-        overflow: 'hidden',
-    },
-    promoGradient: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 16,
-        gap: 12,
-    },
-    promoIconTag: {
-        width: 24,
-        height: 24,
-        borderRadius: 12,
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    promoContent: {
-        flex: 1,
-    },
-    promoText: {
-        color: 'rgba(255,255,255,0.8)',
-        fontSize: 10,
-        fontWeight: '700',
-        letterSpacing: 0.5,
-    },
-    promoBold: {
-        color: theme.colors.white,
-        fontWeight: '900',
-        fontSize: 12,
-    },
-    promoCode: {
-        color: theme.colors.white,
-        fontSize: 13,
-        fontWeight: '800',
-        marginTop: 2,
-        letterSpacing: 1,
-    },
     catalogSection: {
         marginTop: 8,
     },
@@ -295,42 +229,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         gap: 12,
         marginTop: 24,
-    },
-    dualBannerBox: {
-        flex: 1,
-        height: 200,
-    },
-    dualBannerImg: {
-        flex: 1,
-    },
-    roundedImg: {
-        borderRadius: 12,
-    },
-    dualGradient: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        padding: 12,
-        borderRadius: 12,
-    },
-    dualTag: {
-        color: 'rgba(255,255,255,0.7)',
-        fontSize: 8,
-        fontWeight: '900',
-        letterSpacing: 1,
-        marginBottom: 4,
-    },
-    dualTitle: {
-        color: theme.colors.white,
-        fontSize: 16,
-        fontWeight: '800',
-        marginBottom: 8,
-    },
-    dualAction: {
-        color: theme.colors.white,
-        fontSize: 10,
-        fontWeight: '900',
-        letterSpacing: 1,
-        textDecorationLine: 'underline',
     },
     section: {
         marginTop: 32,

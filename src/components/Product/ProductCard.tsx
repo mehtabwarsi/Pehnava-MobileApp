@@ -10,9 +10,12 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { theme } from "../../theme/theme";
 import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../Navigation/types";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = (width - 40) / 2; // Adjusted for better 2-column spacing
+
 
 interface ProductCardProps {
     id: string | number;
@@ -36,10 +39,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
     isNew = false,
 }) => {
     const [isFavorited, setIsFavorited] = useState(false);
-
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
     const handlePress = () => {
-        console.log("Navigating to product:", slug);
+        navigation.navigate("ProductDetails");
     };
 
     const handleWishlist = () => {
