@@ -1,15 +1,24 @@
 import React, { useState } from "react";
-import { ScrollView, View, StyleSheet, Text, TouchableOpacity, Dimensions, ImageBackground } from "react-native";
+import {
+    ScrollView,
+    View,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    Dimensions,
+    ImageBackground,
+    FlatList
+} from "react-native";
 import { theme } from "../../theme/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HomeHeader from "../../components/Header/HomeHeader";
 import Catalog from "../../components/Catalog/CataLog";
 import HomeCarousel from "../../components/HomeCarousel/HomeCarousel";
 import ProductCard from "../../components/Product/ProductCard";
-import Icon from "react-native-vector-icons/Ionicons";
 import LinearGradient from "react-native-linear-gradient";
 import PromoCard from "../../components/Card/PromoCard";
 import TrendingCard from "../../components/Card/TrendingCard";
+import { useGetAllProducts } from "../../Services/PublicApi/useApiPublicHook";
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -95,6 +104,10 @@ const MOCK_PRODUCTS = [
 
 const HomeScreen = () => {
     const [activeCategory, setActiveCategory] = useState<'Men' | 'Women' | 'All'>('All');
+    const { data, isLoading } = useGetAllProducts();
+
+    const products = data?.data;
+    console.log("products", products);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -197,13 +210,34 @@ const HomeScreen = () => {
                         </View>
                     </View>
 
-                    <View style={styles.productGrid}>
+                    {/* <View style={styles.productGrid}>
                         {MOCK_PRODUCTS.map((product) => (
                             <View key={product.id} style={styles.gridItem}>
                                 <ProductCard {...product} />
                             </View>
                         ))}
-                    </View>
+                    </View> */}
+
+
+
+                    <FlatList
+                        data={products}
+                        renderItem={({ item }) => (
+                            <ProductCard
+                                id={item._id}
+                                slug={item.slug}
+                                title={item.name}
+                                price={item.price}
+                                image={item?.images[0]}
+                                containerStyle={{ width: (SCREEN_WIDTH - 40 - 12) / 2 }}
+                            />
+                        )}
+                        keyExtractor={(item) => item._id}
+                        numColumns={2}
+                        scrollEnabled={false}
+                        columnWrapperStyle={{ columnGap: 12 }}
+                    />
+
                 </View>
 
                 <View style={{ height: 100 }} />
@@ -325,16 +359,18 @@ const styles = StyleSheet.create({
         fontWeight: '800',
         letterSpacing: 1,
     },
+    gridItem: {
+        width: '48%',
+        marginBottom: 20,
+    },
+
     productGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
         marginTop: 4,
     },
-    gridItem: {
-        width: '48%',
-        marginBottom: 20,
-    },
+
 });
 
 export default HomeScreen;

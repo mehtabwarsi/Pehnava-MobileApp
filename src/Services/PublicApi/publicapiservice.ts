@@ -5,6 +5,7 @@ export const getAllProductsApi = async () => {
         const response = await publicApi.get("product/get-all-products");
         return response.data
     } catch (error) {
+        console.error("getAllProductsApi Error:", error);
         throw error
     }
 }
@@ -14,6 +15,7 @@ export const getProductByIdApi = async (id: string) => {
         const response = await publicApi.get(`product/${id}`);
         return response.data
     } catch (error) {
+        console.error("getProductByIdApi Error:", error);
         throw error
     }
 }

@@ -26,6 +26,7 @@ interface ProductCardProps {
     originalPrice?: number;
     rating?: number;
     isNew?: boolean;
+    containerStyle?: any;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -37,6 +38,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     originalPrice,
     rating = 4.5,
     isNew = false,
+    containerStyle,
 }) => {
     const [isFavorited, setIsFavorited] = useState(false);
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -51,7 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
     return (
         <TouchableOpacity
-            style={styles.container}
+            style={[styles.container, containerStyle]}
             onPress={handlePress}
             activeOpacity={0.8}
         >
