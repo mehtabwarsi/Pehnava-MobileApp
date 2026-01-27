@@ -14,20 +14,15 @@ import Header from "../../components/Header/Header";
 import Icon from "react-native-vector-icons/Ionicons";
 import { theme } from "../../theme/theme";
 import ProductCard from "../../components/Product/ProductCard";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../../Navigation/types";
-import { useGetProductById } from "../../Services/PublicApi/useApiPublicHook";
+import { useGetProductById, useGetAllProducts } from "../../Services/PublicApi/useApiPublicHook";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 const { width } = Dimensions.get("window");
 
-const images = [
-    "https://images.unsplash.com/photo-1621335829175-95f437384d7c",
-    "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-    "https://i.pinimg.com/736x/b9/2f/f5/b92ff5d2013e43589349109e09f7955f.jpg",
-];
 
-// Mock data
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+// Mock dat
 const COLORS = [
     { name: "Black", hex: "#000000" },
     { name: "Navy", hex: "#1E3A8A" },
@@ -52,41 +47,22 @@ const MOCK_REVIEWS = [
     },
 ];
 
-const SIMILAR_PRODUCTS = [
-    {
-        id: "5",
-        slug: "similar-kurta-1",
-        title: "Designer Kurta Set",
-        price: 2499,
-        originalPrice: 4999,
-        image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b",
-        isNew: true,
-        rating: 4.5,
-    },
-    {
-        id: "6",
-        slug: "similar-kurta-2",
-        title: "Ethnic Wear",
-        price: 1999,
-        originalPrice: 3499,
-        image: "https://i.pinimg.com/736x/b9/2f/f5/b92ff5d2013e43589349109e09f7955f.jpg",
-        isNew: false,
-        rating: 4.2,
-    },
-];
-
 // ===== INDICATOR CONFIG =====
 const TRACK_WIDTH = 120;
 const TRACK_PADDING = 8;
 
 const ProductDetailsScreen = () => {
+    const route = useRoute<RouteProp<RootStackParamList, "ProductDetails">>();
     const scrollX = useRef(new Animated.Value(0)).current;
     const [selectedSize, setSelectedSize] = useState("M");
     const [selectedColor, setSelectedColor] = useState(COLORS[0]);
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
     const [isFavorited, setIsFavorited] = useState(false);
 
-    const route = useRoute<RouteProp<RootStackParamList, "ProductDetails">>();
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    const { data: allProducts } = useGetAllProducts();
+    const allProductsData = allProducts?.data;
+
     const { id } = route.params;
     const { data } = useGetProductById(id);
     const product = data?.data;
@@ -204,7 +180,6 @@ const ProductDetailsScreen = () => {
                             { useNativeDriver: false } // ✔ correct
                         )}
                         renderItem={({ item }) => {
-                            console.log(item)
                             return (
                                 <View style={{ width, height: 450 }}>
                                     <Image source={{ uri: item }} style={styles.image} />
@@ -307,7 +282,7 @@ const ProductDetailsScreen = () => {
                         <Text style={styles.selectorLabel}>
                             SIZE: <Text style={styles.selectorValue}>{selectedSize.toUpperCase()}</Text>
                         </Text>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.push("SizeGuide")}>
                             <Text style={styles.sizeGuideLink}>SIZE GUIDE</Text>
                         </TouchableOpacity>
                     </View>
@@ -504,9 +479,15 @@ const ProductDetailsScreen = () => {
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={styles.similarScroll}
                     >
-                        {SIMILAR_PRODUCTS.map((product) => (
-                            <View key={product.id} style={styles.similarCard}>
-                                <ProductCard {...product} />
+                        {allProductsData?.slice(0, 10).map((product: any) => (
+                            <View key={product._id} style={styles.similarCard}>
+                                <ProductCard
+                                    title={product.name}
+                                    price={product.price}
+                                    image={product.images[0]}
+                                    id={product._id}
+                                    slug={product.slug}
+                                />
                             </View>
                         ))}
                     </ScrollView>

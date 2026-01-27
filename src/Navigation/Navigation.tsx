@@ -8,12 +8,16 @@ import TabNavigator from "./TabNavigator";
 import SearchScreen from "../Screens/SearchScreen/SearchScreen";
 import WishListScreen from "../Screens/WishList/WishListScreen";
 import ProductDetailsScreen from "../Screens/ProductScreen/ProductDetailsScreen";
+import SizeGuide from "../Screens/ProductScreen/SizeGuide";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Navigation() {
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Splash">
+        <Stack.Navigator
+            initialRouteName="Splash"
+            screenOptions={{ headerShown: false }}>
+
             <Stack.Screen name="Splash" component={SplashScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Main" component={TabNavigator} />
@@ -22,6 +26,8 @@ export default function Navigation() {
             <Stack.Screen name="Search" component={SearchScreen} />
             <Stack.Screen name="WishList" component={WishListScreen} />
             <Stack.Screen name="ProductDetails" component={ProductDetailsScreen} />
+            <Stack.Screen name="SizeGuide" component={SizeGuide} />
+
         </Stack.Navigator>
     );
 }

@@ -7,6 +7,7 @@ export type RootStackParamList = {
     Checkout: undefined;
     Search: undefined;
     WishList: undefined;
+    SizeGuide: undefined;
 };
 
 export type TabParamList = {
