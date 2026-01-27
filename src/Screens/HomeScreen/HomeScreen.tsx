@@ -210,16 +210,6 @@ const HomeScreen = () => {
                         </View>
                     </View>
 
-                    {/* <View style={styles.productGrid}>
-                        {MOCK_PRODUCTS.map((product) => (
-                            <View key={product.id} style={styles.gridItem}>
-                                <ProductCard {...product} />
-                            </View>
-                        ))}
-                    </View> */}
-
-
-
                     <FlatList
                         data={products}
                         renderItem={({ item }) => (

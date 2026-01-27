@@ -14,6 +14,9 @@ import Header from "../../components/Header/Header";
 import Icon from "react-native-vector-icons/Ionicons";
 import { theme } from "../../theme/theme";
 import ProductCard from "../../components/Product/ProductCard";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { RootStackParamList } from "../../Navigation/types";
+import { useGetProductById } from "../../Services/PublicApi/useApiPublicHook";
 
 const { width } = Dimensions.get("window");
 
@@ -83,10 +86,83 @@ const ProductDetailsScreen = () => {
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
     const [isFavorited, setIsFavorited] = useState(false);
 
-    const thumbWidth = (TRACK_WIDTH - TRACK_PADDING * 2) / images.length;
+    const route = useRoute<RouteProp<RootStackParamList, "ProductDetails">>();
+    const { id } = route.params;
+    const { data } = useGetProductById(id);
+    const product = data?.data;
+
+    // Safely access variants - default to empty array if undefined
+    const variants = product?.variants || [];
+
+    // Derived Data
+    // 1. Unique Sizes
+    const uniqueSizes = React.useMemo(() => {
+        if (!variants || variants.length === 0) return [];
+        const sizes = [...new Set(variants.map((v: any) => v.size))];
+        // Sort sizes logic
+        const sizeOrder = ["XS", "S", "M", "L", "XL", "XXL", "28", "30", "32", "34", "36", "38"];
+        return sizes.sort((a: any, b: any) => {
+            const indexA = sizeOrder.indexOf(a);
+            const indexB = sizeOrder.indexOf(b);
+            // If both are found in order list
+            if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+            // If only A is found
+            if (indexA !== -1) return -1;
+            // If only B is found
+            if (indexB !== -1) return 1;
+            // Fallback to string comparison
+            return String(a).localeCompare(String(b));
+        });
+    }, [variants]);
+
+    // 2. Unique Colors with Hex
+    const getColorHex = (name: string) => {
+        const lowerName = name?.toLowerCase() || '';
+        switch (lowerName) {
+            case 'white': return '#FFFFFF';
+            case 'black': return '#000000';
+            case 'blue': return '#1E3A8A';
+            case 'navy': return '#0F172A';
+            case 'red': return '#DC2626';
+            case 'maroon': return '#7F1D1D';
+            case 'green': return '#16A34A';
+            case 'olive': return '#3F6212';
+            case 'yellow': return '#CA8A04';
+            case 'pink': return '#DB2777';
+            case 'grey':
+            case 'gray': return '#808080';
+            default: return '#CCCCCC';
+        }
+    };
+
+    const uniqueColors = React.useMemo(() => {
+        if (!variants || variants.length === 0) return [];
+        const colors = [...new Set(variants.map((v: any) => v.color))]; // Filter unique color names
+        return colors.map((color: any) => ({
+            name: color,
+            hex: getColorHex(color)
+        }));
+    }, [variants]);
+
+    // Initialize state
+    React.useEffect(() => {
+        if (uniqueSizes.length > 0 && (!selectedSize || !uniqueSizes.includes(selectedSize))) {
+            setSelectedSize(String(uniqueSizes[0]));
+        }
+        if (uniqueColors.length > 0) {
+            const foundColor = uniqueColors.find(c => c.name === selectedColor.name);
+            if (!foundColor) {
+                setSelectedColor(uniqueColors[0]);
+            }
+        }
+    }, [uniqueSizes, uniqueColors, selectedSize, selectedColor.name]);
+
+    const productImages = product?.images && product.images.length > 0 ? product.images : ["https://placehold.co/600x400/png"];
+    // console.log(productImages)
+    const thumbWidth = (TRACK_WIDTH - TRACK_PADDING * 2) / productImages.length;
 
     const translateX = scrollX.interpolate({
-        inputRange: [0, width * (images.length - 1)],
+        inputRange: [0, width * (productImages.length - 1)],
         outputRange: [
             TRACK_PADDING,
             TRACK_WIDTH - thumbWidth - TRACK_PADDING,
@@ -101,7 +177,7 @@ const ProductDetailsScreen = () => {
     return (
         <SafeAreaView style={styles.container}>
             <Header
-                title="Product Details"
+                title={product?.name}
                 showShare
                 showWishlist
                 showCart
@@ -111,11 +187,13 @@ const ProductDetailsScreen = () => {
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
+                keyboardShouldPersistTaps="handled"
             >
                 {/* IMAGE CAROUSEL */}
                 <View style={styles.carouselContainer}>
                     <Animated.FlatList
-                        data={images}
+                        key={productImages.length}
+                        data={productImages}
                         horizontal
                         pagingEnabled
                         showsHorizontalScrollIndicator={false}
@@ -123,11 +201,16 @@ const ProductDetailsScreen = () => {
                         scrollEventThrottle={16}
                         onScroll={Animated.event(
                             [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                            { useNativeDriver: true }
+                            { useNativeDriver: false } // ✔ correct
                         )}
-                        renderItem={({ item }) => (
-                            <Image source={{ uri: item }} style={styles.image} />
-                        )}
+                        renderItem={({ item }) => {
+                            console.log(item)
+                            return (
+                                <View style={{ width, height: 450 }}>
+                                    <Image source={{ uri: item }} style={styles.image} />
+                                </View>
+                            )
+                        }}
                     />
 
                     {/* SYSTEM-LIKE INDICATOR */}
@@ -169,12 +252,12 @@ const ProductDetailsScreen = () => {
                     </View>
 
                     <Text style={styles.productTitle}>
-                        Premium Cotton Ethnic Kurta Set
+                        {product?.name}
                     </Text>
 
                     <View style={styles.priceRow}>
-                        <Text style={styles.price}>₹2,499</Text>
-                        <Text style={styles.originalPrice}>₹4,999</Text>
+                        <Text style={styles.price}>₹{product?.discountPrice}</Text>
+                        <Text style={styles.originalPrice}>₹{product?.price}</Text>
                         <View style={styles.discountBadge}>
                             <Text style={styles.discountText}>50% OFF</Text>
                         </View>
@@ -186,10 +269,10 @@ const ProductDetailsScreen = () => {
                 {/* COLOR SELECTOR */}
                 <View style={styles.selectorSection}>
                     <Text style={styles.selectorLabel}>
-                        COLOR: <Text style={styles.selectorValue}>{selectedColor.name}</Text>
+                        COLOR: <Text style={styles.selectorValue}>{selectedColor.name.toUpperCase()}</Text>
                     </Text>
                     <View style={styles.colorGrid}>
-                        {COLORS.map((color) => (
+                        {uniqueColors.map((color) => (
                             <TouchableOpacity
                                 key={color.name}
                                 style={[
@@ -222,33 +305,59 @@ const ProductDetailsScreen = () => {
                 <View style={styles.selectorSection}>
                     <View style={styles.selectorHeader}>
                         <Text style={styles.selectorLabel}>
-                            SIZE: <Text style={styles.selectorValue}>{selectedSize}</Text>
+                            SIZE: <Text style={styles.selectorValue}>{selectedSize.toUpperCase()}</Text>
                         </Text>
                         <TouchableOpacity>
                             <Text style={styles.sizeGuideLink}>SIZE GUIDE</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.sizeGrid}>
-                        {SIZES.map((size) => (
-                            <TouchableOpacity
-                                key={size}
-                                style={[
-                                    styles.sizeOption,
-                                    selectedSize === size && styles.sizeOptionSelected,
-                                ]}
-                                onPress={() => setSelectedSize(size)}
-                                activeOpacity={0.7}
-                            >
-                                <Text
-                                    style={[
-                                        styles.sizeText,
-                                        selectedSize === size && styles.sizeTextSelected,
-                                    ]}
-                                >
-                                    {size}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
+                        {uniqueSizes.map((size) => {
+                            // Calculate stock for this size
+                            const sizeVariants = variants.filter((v: any) => v.size === String(size));
+                            const totalStock = sizeVariants.reduce((acc: number, v: any) => acc + (v.stock || 0), 0);
+                            const isOutOfStock = totalStock === 0;
+
+                            return (
+                                <View key={String(size)} style={{ alignItems: 'center', gap: 4 }}>
+                                    <TouchableOpacity
+                                        disabled={isOutOfStock}
+                                        style={[
+                                            styles.sizeOption,
+                                            selectedSize === String(size) && styles.sizeOptionSelected,
+                                            isOutOfStock && styles.sizeOptionDisabled
+                                        ]}
+                                        onPress={() => {
+                                            setSelectedSize(String(size));
+                                            const firstAvailableVariant = sizeVariants.find((v: any) => (v.stock || 0) > 0);
+                                            if (firstAvailableVariant) {
+                                                const matchingColor = uniqueColors.find(c => c.name === firstAvailableVariant.color);
+                                                if (matchingColor) setSelectedColor(matchingColor);
+                                            }
+                                        }}
+                                        activeOpacity={0.7}
+                                    >
+                                        <Text
+                                            style={[
+                                                styles.sizeText,
+                                                selectedSize === String(size) && styles.sizeTextSelected,
+                                                isOutOfStock && styles.sizeTextDisabled
+                                            ]}
+                                        >
+                                            {String(size).toUpperCase()}
+                                        </Text>
+                                        {isOutOfStock && (
+                                            <View style={styles.diagonalLine} />
+                                        )}
+                                    </TouchableOpacity>
+                                    {!isOutOfStock && totalStock < 11 && (
+                                        <Text style={styles.lowStockText}>
+                                            {totalStock} left
+                                        </Text>
+                                    )}
+                                </View>
+                            );
+                        })}
                     </View>
                 </View>
 
@@ -272,15 +381,24 @@ const ProductDetailsScreen = () => {
                     {expandedSection === "details" && (
                         <View style={styles.expandableContent}>
                             <Text style={styles.detailText}>
-                                Premium quality ethnic kurta set crafted from 100% pure cotton.
-                                Perfect for casual outings and festive occasions.
+                                {product?.description}
                             </Text>
+
+                            <Text style={[styles.expandableTitle, { fontSize: 13, marginBottom: 8, marginTop: 8 }]}>Features</Text>
                             <View style={styles.detailList}>
-                                <Text style={styles.detailItem}>• Fabric: 100% Cotton</Text>
-                                <Text style={styles.detailItem}>• Pattern: Solid</Text>
-                                <Text style={styles.detailItem}>• Sleeve: Full Sleeve</Text>
-                                <Text style={styles.detailItem}>• Fit: Regular Fit</Text>
-                                <Text style={styles.detailItem}>• Occasion: Casual & Festive</Text>
+                                {product?.features?.map((feature: any, index: number) => (
+                                    <Text key={index} style={styles.detailItem}>• {feature}</Text>
+                                ))}
+                            </View>
+
+                            <Text style={[styles.expandableTitle, { fontSize: 13, marginBottom: 8, marginTop: 16 }]}>Specifications</Text>
+                            <View style={styles.detailList}>
+                                {Object.entries(product?.specifications || {}).map(([key, value]: any) => (
+                                    <View key={key} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                                        <Text style={[styles.detailItem, { fontWeight: '600', textTransform: 'capitalize' }]}>{key}:</Text>
+                                        <Text style={[styles.detailItem, { textTransform: 'capitalize' }]}>{value}</Text>
+                                    </View>
+                                ))}
                             </View>
                         </View>
                     )}
@@ -417,7 +535,7 @@ export default ProductDetailsScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: "#F8F9FA",
     },
     scrollContent: {
         paddingBottom: 20,
@@ -561,12 +679,14 @@ const styles = StyleSheet.create({
     },
     selectorValue: {
         color: theme.colors.primary,
+
     },
     sizeGuideLink: {
         fontSize: 11,
         fontWeight: "700",
         color: theme.colors.primary,
         textDecorationLine: "underline",
+        textTransform: 'capitalize'
     },
 
     // Color Selector
@@ -607,7 +727,8 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     sizeOption: {
-        width: 52,
+        minWidth: 50,
+        paddingHorizontal: 12,
         height: 44,
         borderRadius: 8,
         borderWidth: 1.5,
@@ -624,10 +745,33 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: "600",
         color: theme.colors.charcoal,
+        textTransform: 'uppercase'
+
     },
     sizeTextSelected: {
         color: theme.colors.primary,
         fontWeight: "800",
+        textTransform: 'uppercase'
+    },
+    sizeOptionDisabled: {
+        backgroundColor: '#F3F4F6', // light gray
+        borderColor: '#E5E7EB',
+    },
+    sizeTextDisabled: {
+        color: '#9CA3AF', // gray 400
+        textDecorationLine: 'line-through',
+    },
+    diagonalLine: {
+        position: 'absolute',
+        width: '120%',
+        height: 1,
+        backgroundColor: '#D1D5DB',
+        transform: [{ rotate: '-45deg' }],
+    },
+    lowStockText: {
+        fontSize: 10,
+        fontWeight: '700',
+        color: '#D97706', // amber 600
     },
 
     // Expandable Sections

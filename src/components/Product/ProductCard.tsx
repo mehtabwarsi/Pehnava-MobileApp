@@ -44,7 +44,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
     const handlePress = () => {
-        navigation.navigate("ProductDetails");
+        navigation.navigate("ProductDetails", { id: id.toString() });
     };
 
     const handleWishlist = () => {
