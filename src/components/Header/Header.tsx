@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View, ViewStyle, TextStyle } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 
@@ -41,6 +41,7 @@ const Header = ({
             navigation.goBack();
         }
     };
+
 
     return (
         <View style={[styles.container, containerStyle]}>
@@ -112,6 +113,7 @@ const styles = StyleSheet.create({
         color: '#333',
         marginLeft: 12,
         flex: 1,
+        textTransform: 'capitalize'
     },
     iconButton: {
         padding: 4,

@@ -35,6 +35,7 @@ interface CatalogProps {
 
 const Catalog: React.FC<CatalogProps> = ({ title, description, categories, gender }) => {
     const navigation = useNavigation<any>();
+    console.log(`categories`, categories)
 
     if (!categories || categories.length === 0) return null;
 

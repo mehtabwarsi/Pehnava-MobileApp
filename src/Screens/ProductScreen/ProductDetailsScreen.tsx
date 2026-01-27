@@ -14,7 +14,7 @@ import Header from "../../components/Header/Header";
 import Icon from "react-native-vector-icons/Ionicons";
 import { theme } from "../../theme/theme";
 import ProductCard from "../../components/Product/ProductCard";
-import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../../Navigation/types";
 import { useGetProductById, useGetAllProducts } from "../../Services/PublicApi/useApiPublicHook";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -54,6 +54,8 @@ const TRACK_PADDING = 8;
 const ProductDetailsScreen = () => {
     const route = useRoute<RouteProp<RootStackParamList, "ProductDetails">>();
     const scrollX = useRef(new Animated.Value(0)).current;
+    const flatListRef = useRef<any>(null);
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedSize, setSelectedSize] = useState("M");
     const [selectedColor, setSelectedColor] = useState(COLORS[0]);
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
@@ -146,6 +148,24 @@ const ProductDetailsScreen = () => {
         extrapolate: "clamp",
     });
 
+    // Auto-scroll effect
+    React.useEffect(() => {
+        const interval = setInterval(() => {
+            if (flatListRef.current && productImages.length > 1) {
+                setCurrentIndex((prevIndex) => {
+                    const nextIndex = (prevIndex + 1) % productImages.length;
+                    flatListRef.current?.scrollToOffset({
+                        offset: nextIndex * width,
+                        animated: true,
+                    });
+                    return nextIndex;
+                });
+            }
+        }, 3000); // Change image every 3 seconds
+
+        return () => clearInterval(interval);
+    }, [productImages.length]);
+
     const toggleSection = (section: string) => {
         setExpandedSection(expandedSection === section ? null : section);
     };
@@ -168,6 +188,7 @@ const ProductDetailsScreen = () => {
                 {/* IMAGE CAROUSEL */}
                 <View style={styles.carouselContainer}>
                     <Animated.FlatList
+                        ref={flatListRef}
                         key={productImages.length}
                         data={productImages}
                         horizontal
@@ -200,19 +221,6 @@ const ProductDetailsScreen = () => {
                             ]}
                         />
                     </View>
-
-                    {/* Wishlist Floating Button */}
-                    <TouchableOpacity
-                        style={styles.wishlistFloat}
-                        onPress={() => setIsFavorited(!isFavorited)}
-                        activeOpacity={0.8}
-                    >
-                        <Icon
-                            name={isFavorited ? "heart" : "heart-outline"}
-                            size={24}
-                            color={isFavorited ? theme.colors.accent : theme.colors.charcoal}
-                        />
-                    </TouchableOpacity>
                 </View>
 
                 {/* PRODUCT INFO */}
@@ -500,11 +508,23 @@ const ProductDetailsScreen = () => {
             {/* STICKY BOTTOM BAR */}
             <View style={styles.bottomBar}>
                 <TouchableOpacity
+                    style={styles.wishlistButton}
+                    onPress={() => setIsFavorited(!isFavorited)}
+                    activeOpacity={0.8}
+                >
+                    <Icon
+                        name={isFavorited ? "heart" : "heart-outline"}
+                        size={22}
+                        color={isFavorited ? theme.colors.accent : theme.colors.charcoal}
+                    />
+                </TouchableOpacity>
+
+                <TouchableOpacity
                     style={styles.addToBagButton}
                     activeOpacity={0.8}
                 >
                     <Icon name="bag-outline" size={20} color={theme.colors.white} />
-                    <Text style={styles.addToBagText}>ADD TO BAG</Text>
+                    <Text style={styles.addToBagText}>MOVE TO BAG</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -604,7 +624,9 @@ const styles = StyleSheet.create({
         color: theme.colors.charcoal,
         marginBottom: 12,
         lineHeight: 24,
+        textTransform: 'capitalize'
     },
+
     priceRow: {
         flexDirection: "row",
         alignItems: "center",
@@ -893,6 +915,8 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
+        flexDirection: "row",
+        gap: 12,
         backgroundColor: theme.colors.white,
         paddingHorizontal: 20,
         paddingVertical: 12,
@@ -904,7 +928,18 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 10,
     },
+    wishlistButton: {
+        width: 56,
+        height: 56,
+        borderRadius: 10,
+        borderWidth: 1.5,
+        borderColor: theme.colors.border,
+        backgroundColor: theme.colors.white,
+        justifyContent: "center",
+        alignItems: "center",
+    },
     addToBagButton: {
+        flex: 1,
         flexDirection: "row",
         backgroundColor: theme.colors.primary,
         paddingVertical: 16,
@@ -914,10 +949,10 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     addToBagText: {
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: "800",
         color: theme.colors.white,
-        letterSpacing: 1,
+        letterSpacing: 1.2,
     },
 });
 

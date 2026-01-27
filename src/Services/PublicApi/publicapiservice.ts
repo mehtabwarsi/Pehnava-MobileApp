@@ -19,3 +19,21 @@ export const getProductByIdApi = async (id: string) => {
         throw error
     }
 }
+
+export const getCollectionsApi = async () => {
+    try {
+        const response = await publicApi.get("collection");
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
+export const getCatalogsApi = async () => {
+    try {
+        const response = await publicApi.get("catalog/getAllCatalogsAdmin");
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}

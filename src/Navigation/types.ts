@@ -8,6 +8,7 @@ export type RootStackParamList = {
     Search: undefined;
     WishList: undefined;
     SizeGuide: undefined;
+    CollectionProduct: { data: [] };
 };
 
 export type TabParamList = {

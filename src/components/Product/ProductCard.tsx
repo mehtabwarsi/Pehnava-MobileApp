@@ -204,6 +204,7 @@ const styles = StyleSheet.create({
         fontWeight: "500",
         color: theme.colors.charcoal,
         marginBottom: 4,
+        textTransform: 'capitalize'
     },
     priceRow: {
         flexDirection: "row",

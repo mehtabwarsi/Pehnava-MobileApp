@@ -15,6 +15,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../Navigation/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Feather';
+import { useGetCollections } from '../../Services/PublicApi/useApiPublicHook';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -57,6 +58,13 @@ const COLLECTIONS_MOCK = [
 
 const CollectionScreen = () => {
     const navigation = useNavigation<NavigationProp>();
+    const { data } = useGetCollections();
+
+    const collection = data?.data.filter((collection: any) => collection.isActive === true);
+    console.log(collection);
+
+
+
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -93,15 +101,15 @@ const CollectionScreen = () => {
 
                 {/* 2. Varied Visual Rhythm Collection Grid */}
                 <View style={styles.gridContainer}>
-                    {COLLECTIONS_MOCK.map((collection) => (
+                    {collection?.map((collection: any) => (
                         <CollectionCard
-                            key={collection.id}
+                            key={collection._id}
                             title={collection.title}
                             subtitle={collection.subtitle}
                             image={collection.image}
                             isLarge={collection.isLarge}
                             onPress={() => {
-                                console.log(`Navigating to collection: ${collection.slug}`);
+                                navigation.navigate('CollectionProduct', { data: collection });
                             }}
                         />
                     ))}

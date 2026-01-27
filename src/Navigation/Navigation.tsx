@@ -9,6 +9,7 @@ import SearchScreen from "../Screens/SearchScreen/SearchScreen";
 import WishListScreen from "../Screens/WishList/WishListScreen";
 import ProductDetailsScreen from "../Screens/ProductScreen/ProductDetailsScreen";
 import SizeGuide from "../Screens/ProductScreen/SizeGuide";
+import CollectionProduct from "../Screens/Collection/CollectionProduct";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -27,6 +28,7 @@ export default function Navigation() {
             <Stack.Screen name="WishList" component={WishListScreen} />
             <Stack.Screen name="ProductDetails" component={ProductDetailsScreen} />
             <Stack.Screen name="SizeGuide" component={SizeGuide} />
+            <Stack.Screen name="CollectionProduct" component={CollectionProduct} />
 
         </Stack.Navigator>
     );

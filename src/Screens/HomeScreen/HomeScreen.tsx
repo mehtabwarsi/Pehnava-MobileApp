@@ -18,7 +18,7 @@ import ProductCard from "../../components/Product/ProductCard";
 import LinearGradient from "react-native-linear-gradient";
 import PromoCard from "../../components/Card/PromoCard";
 import TrendingCard from "../../components/Card/TrendingCard";
-import { useGetAllProducts } from "../../Services/PublicApi/useApiPublicHook";
+import { useGetAllProducts, useGetCatalogs } from "../../Services/PublicApi/useApiPublicHook";
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -79,35 +79,18 @@ const MOCK_TRENDING = [
     },
 ];
 
-const MOCK_PRODUCTS = [
-    {
-        id: "3",
-        slug: "ethnic-party-wear",
-        title: "Ethnic Party Wear",
-        price: 3200,
-        originalPrice: 4500,
-        image: "https://i.pinimg.com/736x/b9/2f/f5/b92ff5d2013e43589349109e09f7955f.jpg",
-        isNew: true,
-        rating: 4.2,
-    },
-    {
-        id: "4",
-        slug: "modern-lehenga-choli",
-        title: "Bridal Lehenga",
-        price: 12500,
-        originalPrice: 25000,
-        image: "https://i.pinimg.com/1200x/f3/f9/f5/f3f9f5b48079d4daa97e07a9a97395a6.jpg",
-        isNew: false,
-        rating: 4.9,
-    },
-];
-
 const HomeScreen = () => {
     const [activeCategory, setActiveCategory] = useState<'Men' | 'Women' | 'All'>('All');
     const { data, isLoading } = useGetAllProducts();
+    const { data: catalogsData, isLoading: catalogsLoading } = useGetCatalogs();
 
+    // Filter catalogs by gender and isActive status - returns arrays
+    const mensCatalog = catalogsData?.data?.filter((catalog: any) => catalog.gender === 'men' && catalog.isActive === true) || [];
+    const womensCatalog = catalogsData?.data?.filter((catalog: any) => catalog.gender === 'women' && catalog.isActive === true) || [];
+
+    console.log("mensCatalog", mensCatalog);
+    console.log("womensCatalog", womensCatalog);
     const products = data?.data;
-    console.log("products", products);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -136,7 +119,7 @@ const HomeScreen = () => {
                         title="The Collection"
                         gender={activeCategory === 'All' ? undefined : activeCategory}
                         description="Cinematic designs that tell a story of elegance."
-                        categories={activeCategory === 'Men' ? MOCK_CATEGORIES_MEN : MOCK_CATEGORIES_WOMEN}
+                        categories={activeCategory === 'Men' ? mensCatalog : womensCatalog}
                     />
                 </View>
 
